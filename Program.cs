@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Data;
 using System.Collections.Generic;
+using IronXL;
 
 namespace NBA_Stat_Request
 {
@@ -22,11 +23,13 @@ namespace NBA_Stat_Request
             
 
             await GetStats();
+            // WriteHeaders();
+            WriteStats();
 
-            foreach(string header in rData.resultSets[0].headers)
-            {
-                Console.WriteLine(header);
-            }
+            //foreach(string header in rData.resultSets[0].headers)
+            //{
+            //    Console.WriteLine(header);
+            //}
             
             Console.Read();
           
@@ -61,6 +64,50 @@ namespace NBA_Stat_Request
 
         }
 
+        static void WriteHeaders()
+        {
+            WorkBook firstBook = WorkBook.Load("ThirdExcelFile.xlsx");
+            WorkSheet sheet = firstBook.DefaultWorkSheet;
+
+            IList<string> headers = rData.resultSets[0].headers;
+
+            for (int i = 3; i < headers.Count+3; i++)
+            {
+               sheet.SetCellValue(1, i, headers[i-3]);
+            }
+            
+            firstBook.Save();
+            Console.WriteLine("Headers Written");
+        }
+
+        static void WriteStats()
+        {
+            WorkBook firstBook = WorkBook.Load("ThirdExcelFile.xlsx");
+            WorkSheet sheet = firstBook.DefaultWorkSheet;
+
+            IList<IList<object>> data = rData.resultSets[0].rowSet;
+
+            int col = 3;
+            int row = 2;
+
+            foreach (var statline in data)
+            {
+                foreach (var stat in statline)
+                {
+                    sheet.SetCellValue(row, col, stat);
+
+                    //Console.WriteLine(stat);
+                    col++;
+                }
+                col = 3;
+                row++;
+            }
+
+            firstBook.Save();
+            Console.WriteLine("Stats Written");
+        }
+
+         
         public void OldCode()
         {
             /*try
