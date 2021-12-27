@@ -20,11 +20,9 @@ namespace NBA_Stat_Request
 
         static async Task Main()
         {
-            
-
             await GetStats();
-            // WriteHeaders();
-            WriteStats();
+            //WriteHeaders();
+            //WriteStats();
 
             //foreach(string header in rData.resultSets[0].headers)
             //{
@@ -46,19 +44,21 @@ namespace NBA_Stat_Request
 
             try
             {
-                HttpResponseMessage response = await client.GetAsync("https://stats.nba.com/stats/leaguegamefinder?Conference=&DateFrom=&DateTo=&Division=&DraftNumber=&DraftRound=&DraftYear=&GB=N&LeagueID=00&Location=&Outcome=&PlayerID=406&PlayerOrTeam=P&Season=&SeasonType=&StatCategory=PTS&TeamID=&VsConference=&VsDivision=&VsTeamID=&gtPTS=40");
+                //HttpResponseMessage response = await client.GetAsync("https://stats.nba.com/stats/leaguegamefinder?Conference=&DateFrom=&DateTo=&Division=&DraftNumber=&DraftRound=&DraftYear=&GB=N&LeagueID=00&Location=&Outcome=&PlayerID=406&PlayerOrTeam=P&Season=&SeasonType=&StatCategory=PTS&TeamID=&VsConference=&VsDivision=&VsTeamID=&gtPTS=40");
+                HttpResponseMessage response = await client.GetAsync("https://stats.nba.com/stats/playerindex?College=&Country=&DraftPick=&DraftRound=&DraftYear=&Height=&Historical=1&LeagueID=00&Season=2021-22&SeasonType=Regular%20Season&TeamID=0&Weight=");
                 var responseBody = await response.Content.ReadAsStringAsync();
                 Depot stats = JsonConvert.DeserializeObject<Depot>(responseBody);
                 rData = stats;
 
                 Console.WriteLine(stats.resultSets[0].rowSet[1][0]);
+                Console.WriteLine(stats.resultSets[0].headers[2]);
                 //Console.Read();                
                                 
             }
             catch (HttpRequestException e)
             {
                 Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);                
+                Console.WriteLine("Message :{0} ", e.Message);             
                                 
             }
 
@@ -66,7 +66,7 @@ namespace NBA_Stat_Request
 
         static void WriteHeaders()
         {
-            WorkBook firstBook = WorkBook.Load("ThirdExcelFile.xlsx");
+            WorkBook firstBook = WorkBook.Load("AllPlayers.xlsx");
             WorkSheet sheet = firstBook.DefaultWorkSheet;
 
             IList<string> headers = rData.resultSets[0].headers;
@@ -82,7 +82,7 @@ namespace NBA_Stat_Request
 
         static void WriteStats()
         {
-            WorkBook firstBook = WorkBook.Load("ThirdExcelFile.xlsx");
+            WorkBook firstBook = WorkBook.Load("AllPlayers.xlsx");
             WorkSheet sheet = firstBook.DefaultWorkSheet;
 
             IList<IList<object>> data = rData.resultSets[0].rowSet;
